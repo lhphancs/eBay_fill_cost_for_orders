@@ -56,27 +56,43 @@ def getTitlePhrasesAndPrintFinds(nameToSheetDict, nameToTitleAndCostLocationDict
 
 
 def writeCostToCell(nameToSheetDict, nameToTitleAndCostLocationDict, dictOfMatches, cost):
+    writeAmt = 0
     for key in nameToSheetDict:
+        writeAmt = writeAmt + len( dictOfMatches[key] )
         sheet = nameToSheetDict[key]
         costCol = nameToTitleAndCostLocationDict[key][1][1]
         for row in dictOfMatches[key]:
             sheet.cell(row, costCol).value = cost
+    return writeAmt
 
 def handleWriteCommand(nameToSheetDict, nameToTitleAndCostLocationDict):
     dictOfMatches = getTitlePhrasesAndPrintFinds(nameToSheetDict, nameToTitleAndCostLocationDict)
     cost = getUserInput.getCost()
     confirmResp = getUserInput.getConfirmation("Are you sure you want to write? (Y)es or (N)o: ")
     if confirmResp == 'Y':
-        writeCostToCell(nameToSheetDict, nameToTitleAndCostLocationDict, dictOfMatches, cost)
+        return writeCostToCell(nameToSheetDict, nameToTitleAndCostLocationDict, dictOfMatches, cost)
+
     else:
-        print("Write was ignored. Returning to menu...")
+        return 0
 
 def handleCommand(excelWb, outputPath, nameToSheetDict, nameToTitleAndCostLocationDict, uppercasedCommand):
     if uppercasedCommand == 'F':
         getTitlePhrasesAndPrintFinds(nameToSheetDict, nameToTitleAndCostLocationDict)
     elif uppercasedCommand == 'W':
-        handleWriteCommand(nameToSheetDict, nameToTitleAndCostLocationDict)
-        excelWb.save(outputPath)
+        amtWrite = handleWriteCommand(nameToSheetDict, nameToTitleAndCostLocationDict)
+        if amtWrite > 0:
+            while True:
+                try:
+                    excelWb.save(outputPath)
+                    print( str.format("Write successful. {} cells were written.", amtWrite) )
+                    break
+                except PermissionError as e:
+                    print(e)
+                    print("Is the write file, 'result.xlsx', open?")
+                    print("Press enter to try again...")
+                    input('(Note: Changes made to the excel file outside of this program will not be saved)\n')
+        else:
+            print("Write was ignored. Returning to menu...")
 
     elif uppercasedCommand == 'E':
         pass
@@ -115,14 +131,14 @@ def handlePromptAndResponses(excelWb, outputPath):
     nameToSheetDict = getNameToSheetDict(excelWb)
     nameToTitleAndCostLocationDict = getNameToTitleAndCostLocationDict(excelWb)
     if nameToTitleAndCostLocationDict != None:
-        command = None
-        while command != 'E':
+        uppercasedCommand = None
+        while uppercasedCommand != 'E':
             uppercasedCommand = getUserInput.getMenuCmd()
             handleCommand(excelWb, outputPath, nameToSheetDict, nameToTitleAndCostLocationDict, uppercasedCommand)
 
 if __name__ == '__main__':
     curDir = Path( os.getcwd() )
-    readDirPath = os.path.join(curDir, 'placeExcelFileHere')
+    readDirPath = os.path.join(curDir, 'placeSingleExcelFileHere')
     readExcelPath = getReadExcelPath(readDirPath)
     outputPath = os.path.join(curDir, 'result', 'result.xlsx')
 

@@ -1,0 +1,1 @@
+Place only ONE excel file to be read in this 'placeExcelFileHere' folder. The program will read the first excel file that is in this folder.

@@ -3,5 +3,5 @@ __pycache__
 result/*
 !result/info.txt
 
-placeExcelFileHere/*
-!placeExcelFileHere/info.txt
+placeSingleExcelFileHere/*
+!placeSingleExcelFileHere/info.txt
