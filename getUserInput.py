@@ -22,7 +22,7 @@ def getCost():
         costInput = input("Enter cost to be written: ")
         try:
             return float(costInput)
-        except ValueError as e:
+        except ValueError:
             print("Invalid number. Try again.")
 
 def getConfirmation(msg):
