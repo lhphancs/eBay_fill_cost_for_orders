@@ -21,34 +21,59 @@ def getNameToSheetDict(readWb):
     return retDict
 
 def hasAllPhrases(title, phrases):
+    uppercasedTitle = title.upper()
     for phrase in phrases:
-        if phrase not in title:
+        if phrase.upper() not in uppercasedTitle:
             return False
     return True
 
-def writeCostToCell(sheet, rowIndex, cost):
-    pass
-    
-def handleFindCommand(nameToSheetDict, nameToTitleAndCostLocationDict):
-    phrases = getUserInput.getPhrases()
-    cost = getUserInput.getCost()
+def getDictOfMatches(nameToSheetDict, nameToTitleAndCostLocationDict, phrases):
+    retDict = {}
     for key in nameToSheetDict:
+        matchingRows = []
         sheet = nameToSheetDict[key]
         nameToTitleAndCostLocation = nameToTitleAndCostLocationDict[sheet.title]
         titleCol = nameToTitleAndCostLocation[0][1]
-        costCol = nameToTitleAndCostLocation[1][1]
         for rowIndex in range(nameToTitleAndCostLocation[0][0] + 1, sheet.max_row + 1):
             title = sheet.cell(rowIndex, titleCol).value
             if hasAllPhrases(title, phrases):
-                writeCostToCell(sheet, rowIndex, cost)
+                matchingRows.append(rowIndex)
+        retDict[key] = matchingRows
+    return retDict
 
-    
+def printResultOfFind(nameToSheetDict, nameToTitleAndCostLocationDict, dictOfMatches):
+    for key in nameToSheetDict:
+        titleCol = nameToTitleAndCostLocationDict[key][0][1]
+        print( str.format('{}: ', key) )
+        for row in dictOfMatches[key]:
+            print( '\t' + nameToSheetDict[key].cell(row, titleCol).value)
+
+def getTitlePhrasesAndPrintFinds(nameToSheetDict, nameToTitleAndCostLocationDict):
+    phrases = getUserInput.getPhrases()
+    dictOfMatches = getDictOfMatches(nameToSheetDict, nameToTitleAndCostLocationDict, phrases)
+    printResultOfFind(nameToSheetDict, nameToTitleAndCostLocationDict, dictOfMatches)
+    return dictOfMatches
+
+
+def writeCostToCell(nameToSheetDict, nameToTitleAndCostLocationDict, dictOfMatches, cost):
+    for key in nameToSheetDict:
+        sheet = nameToSheetDict[key]
+        costCol = nameToTitleAndCostLocationDict[key][1][1]
+        for row in dictOfMatches[key]:
+            sheet.cell(row, costCol).value = cost
+
 def handleWriteCommand(nameToSheetDict, nameToTitleAndCostLocationDict):
-    pass
+    dictOfMatches = getTitlePhrasesAndPrintFinds(nameToSheetDict, nameToTitleAndCostLocationDict)
+    cost = getUserInput.getCost()
+    confirmResp = getUserInput.getConfirmation("Are you sure you want to write? (Y)es or N(o): ")
+    if confirmResp == 'Y':
+        writeCostToCell(nameToSheetDict, nameToTitleAndCostLocationDict, dictOfMatches, cost)
+    else:
+        print("Write was ignored. Returning to menu...")
 
 def handleCommand(excelWb, outputPath, nameToSheetDict, nameToTitleAndCostLocationDict, uppercasedCommand):
     if uppercasedCommand == 'F':
-        handleFindCommand(nameToSheetDict, nameToTitleAndCostLocationDict)
+        getTitlePhrasesAndPrintFinds(nameToSheetDict, nameToTitleAndCostLocationDict)
     elif uppercasedCommand == 'W':
         handleWriteCommand(nameToSheetDict, nameToTitleAndCostLocationDict)
         excelWb.save(outputPath)

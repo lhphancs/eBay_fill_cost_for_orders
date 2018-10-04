@@ -24,3 +24,12 @@ def getCost():
             return float(costInput)
         except ValueError as e:
             print("Invalid number. Try again.")
+
+def getConfirmation(msg):
+    while True:
+        resp = input(msg)
+        uppercasedResp = resp.upper()
+        if uppercasedResp == 'Y' or uppercasedResp == 'N':
+            return uppercasedResp
+        else:
+            print('Invalid command...Try again')
