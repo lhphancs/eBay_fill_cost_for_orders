@@ -65,7 +65,7 @@ def writeCostToCell(nameToSheetDict, nameToTitleAndCostLocationDict, dictOfMatch
 def handleWriteCommand(nameToSheetDict, nameToTitleAndCostLocationDict):
     dictOfMatches = getTitlePhrasesAndPrintFinds(nameToSheetDict, nameToTitleAndCostLocationDict)
     cost = getUserInput.getCost()
-    confirmResp = getUserInput.getConfirmation("Are you sure you want to write? (Y)es or N(o): ")
+    confirmResp = getUserInput.getConfirmation("Are you sure you want to write? (Y)es or (N)o: ")
     if confirmResp == 'Y':
         writeCostToCell(nameToSheetDict, nameToTitleAndCostLocationDict, dictOfMatches, cost)
     else:
