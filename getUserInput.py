@@ -1,7 +1,7 @@
 import inputMsgs
 
 def getMenuCmd():
-    return input(inputMsgs.getMenuCmd).upper()
+    return input(inputMsgs.menuCmd).upper()
 
 def getPhrases():
     phrases = []

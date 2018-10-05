@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 import getUserInput
+import inputMsgs
 
 def getReadExcelPath(readDirPath):
     readExcelPath = None
@@ -20,10 +21,17 @@ def getNameToSheetDict(readWb):
         retDict[sheet.title] = sheet
     return retDict
 
-def hasAllPhrases(title, phrases):
+"""This also allows 'must not contain'
+by entering phrase of '! Apple cider', this means title must not contain Apple cider"""
+def meetsAllPhraseConditions(title, phrases):
     uppercasedTitle = title.upper()
     for phrase in phrases:
-        if phrase.upper() not in uppercasedTitle:
+        uppercasedPhrase = phrase.upper()
+        splittedPhrase = uppercasedPhrase.split(' ', 1)
+        if splittedPhrase[0] == '!' and len(splittedPhrase) > 1:
+            if splittedPhrase[1] in uppercasedTitle:
+                return False
+        elif uppercasedPhrase not in uppercasedTitle:
             return False
     return True
 
@@ -36,7 +44,7 @@ def getDictOfMatches(nameToSheetDict, nameToTitleAndCostLocationDict, phrases):
         titleCol = nameToTitleAndCostLocation[0][1]
         for rowIndex in range(nameToTitleAndCostLocation[0][0] + 1, sheet.max_row + 1):
             title = sheet.cell(rowIndex, titleCol).value
-            if hasAllPhrases(title, phrases):
+            if meetsAllPhraseConditions(title, phrases):
                 matchingRows.append(rowIndex)
         retDict[key] = matchingRows
     return retDict
@@ -93,6 +101,8 @@ def handleCommand(excelWb, outputPath, nameToSheetDict, nameToTitleAndCostLocati
                     input('(Note: Changes made to the excel file outside of this program will not be saved)\n')
         else:
             print("Write was ignored. Returning to menu...")
+    elif uppercasedCommand == 'H':
+        print(inputMsgs.menuHelp) 
 
     elif uppercasedCommand == 'E':
         pass
