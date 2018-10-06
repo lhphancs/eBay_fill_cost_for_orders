@@ -9,9 +9,8 @@ import inputMsgs
 def getReadExcelPath(readDirPath):
     readExcelPath = None
     for file in os.listdir(readDirPath):
-        filePath  = os.path.join(readDirPath, file)
         if file.endswith('xlsx'):
-            readExcelPath = filePath
+            readExcelPath = os.path.join(readDirPath, file)
             break
     return readExcelPath
 
