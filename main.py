@@ -146,7 +146,7 @@ def handlePromptAndResponses(excelWb, outputPath):
             handleCommand(excelWb, outputPath, nameToSheetDict, nameToTitleAndCostLocationDict, uppercasedCommand)
 
 if __name__ == '__main__':
-    curDir = Path( os.getcwd() )
+    curDir = os.path.dirname(os.path.abspath(__file__))
     readDirPath = os.path.join(curDir, 'placeSingleExcelFileHere')
     readExcelPath = getReadExcelPath(readDirPath)
     outputPath = os.path.join(curDir, 'result', 'result.xlsx')
