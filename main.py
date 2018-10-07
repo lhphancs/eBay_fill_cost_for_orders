@@ -43,7 +43,7 @@ def getDictOfMatches(nameToSheetDict, nameToTitleAndCostLocationDict, phrases):
         titleCol = nameToTitleAndCostLocation[0][1]
         for rowIndex in range(nameToTitleAndCostLocation[0][0] + 1, sheet.max_row + 1):
             title = sheet.cell(rowIndex, titleCol).value
-            if meetsAllPhraseConditions(title, phrases):
+            if title != None and meetsAllPhraseConditions(title, phrases):
                 matchingRows.append(rowIndex)
         retDict[key] = matchingRows
     return retDict
